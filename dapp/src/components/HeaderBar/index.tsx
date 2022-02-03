@@ -47,13 +47,13 @@ const HeaderBar = ({ walletAddress, connectWallet }: propType): JSX.Element => {
     return (
         <Header>
             <Container>
-                <MultiBlock className='MuiBox-root jss36'>
+                <MultiBlock>
                     <img src='/images/compound-logo.svg' />
-                    <WalletBtn className="jss42">
+                    <WalletBtn>
                         <button className="MuiButtonBase-root MuiButton-root MuiButton-contained jss38 jss39 MuiButton-containedPrimary" tabIndex={0} type="button" onClick={connectWallet}>
                             {
                                 walletAddress ?
-                                    <span className="MuiButton-label"><img src="/images/metamask-icon.png" width="21" height="21" style={{ marginRight: '12px' }} />{walletAddress.slice(0, 4) + "..." + walletAddress.slice(walletAddress.length - 4, walletAddress.length)}</span>
+                                    <span><img src="/images/metamask-icon.png" width="21" height="21" style={{ marginRight: '12px' }} />{walletAddress.slice(0, 4) + "..." + walletAddress.slice(walletAddress.length - 4, walletAddress.length)}</span>
                                     :
                                     "Connect Wallet"
                             }
@@ -62,7 +62,7 @@ const HeaderBar = ({ walletAddress, connectWallet }: propType): JSX.Element => {
                     </WalletBtn>
                 </MultiBlock>
             </Container>
-        </Header>
+        </Header >
 
     )
 }
