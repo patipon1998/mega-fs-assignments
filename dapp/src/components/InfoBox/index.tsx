@@ -2,8 +2,7 @@ import React from "react";
 import styled from 'styled-components'
 
 const Container = styled.div`
-    width: 100%;
-    max-width: 400px;
+    width: 400px;
     border: 1px solid rgb(250, 250, 250);
     border-radius: 10px;
 `

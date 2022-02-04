@@ -1,4 +1,4 @@
-export default [
+export const rinkebyAbi = [
     {
         "constant": true,
         "inputs": [],
@@ -1181,3 +1181,5 @@ export default [
         "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
     }
 ]
+
+export const rinkebyAddr = '0xd6801a1dffcd0a410336ef88def4320d6df1883e'
