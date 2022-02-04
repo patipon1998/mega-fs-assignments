@@ -16,6 +16,7 @@ import web3Service from '../../services/Web3Service';
 import TabPanel from '../../components/TabPanel';
 import InfoBox from '../../components/InfoBox';
 import ActionCard from '../../components/ActionCard'
+import { rawListeners } from 'process';
 
 const InfoContainer = styled.div`
   width: 100%;
@@ -41,9 +42,11 @@ const modalStyle = {
 
 const MainPage = ({ }): JSX.Element => {
 
-  const [isConnected, setIsConnected] = useState<boolean>(false);
   const [chainId, setChainId] = useState<number | undefined>();
   const [account, setAccount] = useState<string | undefined>();
+  const [apy, setApy] = useState<number | undefined>();
+  const [exRate, setExRate] = useState<number | undefined>();
+  const [cash, setCash] = useState<number | undefined>();
 
   const [balance, setBalance] = useState<number | undefined>();
   const [supplied, setSupplied] = useState<number | undefined>();
@@ -65,9 +68,22 @@ const MainPage = ({ }): JSX.Element => {
   };
 
   const reCalBalance = async () => {
+    if (!(isRinkeby && account)) return
     try {
-      web3Service.getAccountBalance().then(a => setBalance(a))
-      web3Service.getSuppliedBalance().then(s => setSupplied(s))
+      await Promise.all([
+        web3Service.getAccountBalance().then(b => setBalance(b)),
+        web3Service.getSuppliedBalance().then(s => setSupplied(s)),
+        web3Service.getSupplyRatePerBlock().then(async rate => {
+          const blockPerDay = 6570
+          setApy((((Math.pow((rate * blockPerDay) + 1, 365))) - 1) * 100)
+        }),
+        web3Service.getExchangeRate().then(
+          er => {
+            setExRate(er)
+          }),
+        web3Service.getCash().then(t => setCash(t))
+      ])
+
     } catch (e) {
       setError('Cannot connect to the contract, check your network.')
     }
@@ -123,15 +139,15 @@ const MainPage = ({ }): JSX.Element => {
     setLoading(false)
     if (transactionHash) setTransaction(transactionHash)
     if (error) setError(error.message)
-
   }
 
   useEffect(() => {
-    if (isRinkeby && account) reCalBalance()
+    reCalBalance()
   }, [chainId, account])
 
   useEffect(() => {
     init()
+    setInterval(reCalBalance, 10000)
   }, [])
 
   return (
@@ -149,14 +165,15 @@ const MainPage = ({ }): JSX.Element => {
         </Box>
         <TabPanel value={value} index={0}>
           <InfoContainer>
-            <InfoBox title='Your Supplied' detail={`${supplied ? Math.round(supplied * 1e+5) / 1e+5 : '0'} eth`} />
-            <InfoBox title='Your Supplied' detail='eth' />
-            <InfoBox title='Your Supplied' detail='eth' />
+            <InfoBox title='Your Supplied' detail={`${supplied ? Math.round(supplied * 1e+5) / 1e+5 : '-'} ETH`} />
+            <InfoBox title='Total Supplied' detail={`${(cash) ? cash + " ETH" : '-'}`} />
+            <InfoBox title='APY' detail={`${apy ? `${apy} %` : '-'}`} />
           </InfoContainer>
           <ActionCard
             onSubmit={handleSupply}
             actionType={1}
             accountBalance={balance}
+            rate={exRate}
           />
         </TabPanel>
         <TabPanel value={value} index={1}>
@@ -164,6 +181,7 @@ const MainPage = ({ }): JSX.Element => {
             onSubmit={handleRedeem}
             actionType={2}
             accountBalance={supplied}
+            rate={exRate}
           />
         </TabPanel>
       </Box>) : (

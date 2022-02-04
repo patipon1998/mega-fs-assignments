@@ -14,7 +14,6 @@ class Web3Service {
   private contract?: Contract;
 
   constructor(web3Modal: Web3Modal) {
-    console.log(web3Modal)
     this.web3Modal = web3Modal
   }
 
@@ -81,6 +80,15 @@ class Web3Service {
     });
   }
 
+  public async getBlockPerSecRate() {
+    this.requireWeb3()
+
+    const nowBlockNumber = await this.web3!.eth.getBlockNumber()
+    const nowBlock = await this.web3!.eth.getBlock(nowBlockNumber)
+    const thenBlock = await this.web3!.eth.getBlock(nowBlockNumber - nowBlockNumber)
+    return nowBlockNumber / (Number(nowBlock.timestamp) - Number(thenBlock.timestamp));
+  }
+
   public async redeemUnderlying(eth: number) {
     this.requireContract()
     this.requireWeb3()
@@ -90,6 +98,25 @@ class Web3Service {
     });
   }
 
+  public async getSupplyRatePerBlock() {
+    this.requireContract()
+    return (await this.contract!.methods.supplyRatePerBlock().call()) / Math.pow(10, 18);
+  }
+
+  public async getExchangeRate() {
+    this.requireContract()
+    return (await this.contract!.methods.exchangeRateCurrent().call()) / Math.pow(10, 18 + 18 - 8);
+  }
+
+  public async getTotalSupply() {
+    this.requireContract()
+    return (await this.contract!.methods.totalSupply().call());
+  }
+
+  public async getCash() {
+    this.requireContract()
+    return (await this.contract!.methods.getCash().call()) / Math.pow(10, 18);
+  }
 }
 
 const web3Modal = new Web3Modal({

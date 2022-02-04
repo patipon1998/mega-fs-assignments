@@ -38,12 +38,14 @@ type propType = {
     actionType: number
     accountBalance?: number
     onSubmit: (eth: number) => Promise<void>
+    rate?: number
 }
 
 const ActionCard = ({
     actionType,
     accountBalance,
     onSubmit,
+    rate
 }: propType): JSX.Element => {
     const [input, setInput] = React.useState<undefined | string>()
     const action = actionType === 1 ? "Supply" : "Withdraw"
@@ -54,7 +56,7 @@ const ActionCard = ({
                     {action}
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} variant="body2">
-                    {`Your ${actionType === 1 ? 'account balance' : 'current supplied'}: ${accountBalance ? Math.round(accountBalance * 1000) / 1000 : '0'} ETH`}
+                    {`Your ${actionType === 1 ? 'account balance' : 'current supplied'}: ${accountBalance ? Math.round(accountBalance * 1000) / 1000 : '-'} ETH`}
                 </Typography>
                 <CssTextField
                     id="outlined-basic"
@@ -67,7 +69,7 @@ const ActionCard = ({
                 <br />
                 <Button size="small" onClick={() => accountBalance && setInput(`${accountBalance}`)}>Max</Button>
                 <Typography variant="body2">
-                    {`${actionType === 1 ? 'Receiving' : "Cost"} - cETH`}
+                    {`${actionType === 1 ? 'Receiving' : "Cost"} ${rate && input ? Number(input) / rate : '-'} cETH`}
                 </Typography>
             </CardContent>
             <CardActions>
