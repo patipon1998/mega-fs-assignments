@@ -8,6 +8,8 @@ import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import HeaderBar from '../../components/HeaderBar';
 import web3Service from '../../services/Web3Service';
@@ -54,6 +56,10 @@ const MainPage = ({ }): JSX.Element => {
   const [transaction, setTransaction] = React.useState<string | undefined>();
   const handleCloseTransaction = () => setTransaction(undefined);
 
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const isRinkeby = chainId === 4;
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -62,7 +68,7 @@ const MainPage = ({ }): JSX.Element => {
     try {
       web3Service.getAccountBalance().then(a => setBalance(a))
       web3Service.getSuppliedBalance().then(s => setSupplied(s))
-    } catch {
+    } catch (e) {
       setError('Cannot connect to the contract, check your network.')
     }
 
@@ -73,38 +79,56 @@ const MainPage = ({ }): JSX.Element => {
       await web3Service.connect()
       setChainId(await web3Service.getChainId())
       setAccount((await web3Service.getAccounts())[0])
-      reCalBalance()
 
-      web3Service.onEvent("connect", (info: { chainId: number }) => {
-        setChainId(info.chainId)
+      web3Service.onEvent("connect", (info: { chainId: string }) => {
+        setChainId(Number(chainId))
         reCalBalance()
       })
-      web3Service.onEvent("chainChanged", (newChainId: number) => {
-        setChainId(newChainId)
-        reCalBalance()
+      web3Service.onEvent("chainChanged", async (newChainId: string) => {
+        setChainId(Number(newChainId))
       });
       web3Service.onEvent("accountsChanged", (accounts: string[]) => {
-        console.log(accounts);
-        setAccount(accounts[0])
-        reCalBalance()
+        const account = accounts[0]
+        if (!account) setChainId(undefined)
+        setAccount(account)
+
       });
       web3Service.onEvent("disconnect", (error: { code: number; message: string }) => {
-        reCalBalance()
+        setAccount(undefined);
+        setChainId(undefined)
       });
-    } catch (_) {
-      setError('Cannot connect to the contract, check your network.')
+    } catch (e) {
+      console.log(e)
     }
   }
 
   const handleSupply = async (eth: number) => {
+    setLoading(true)
     const { transactionHash, error } = await web3Service.mint(eth).catch(e => {
-      console.log(e)
+      setLoading(false)
       setError(e.message)
     })
+    setLoading(false)
     if (transactionHash) setTransaction(transactionHash)
     if (error) setError(error.message)
 
   }
+
+  const handleRedeem = async (eth: number) => {
+    setLoading(true)
+    const { transactionHash, error } = await web3Service.redeemUnderlying(eth).catch(e => {
+      setLoading(false)
+      setError(e.message)
+    })
+    setLoading(false)
+    if (transactionHash) setTransaction(transactionHash)
+    if (error) setError(error.message)
+
+  }
+
+  useEffect(() => {
+    if (isRinkeby && account) reCalBalance()
+  }, [chainId, account])
 
   useEffect(() => {
     init()
@@ -116,7 +140,7 @@ const MainPage = ({ }): JSX.Element => {
         walletAddress={account}
         connectWallet={init}
       />
-      <Box sx={{ width: '100%', maxWidth: 1400, marginLeft: 'auto', marginRight: 'auto', marginTop: '40px' }}>
+      {isRinkeby ? (<Box sx={{ width: '100%', maxWidth: 1400, marginLeft: 'auto', marginRight: 'auto', marginTop: '40px' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="Supply" />
@@ -125,7 +149,7 @@ const MainPage = ({ }): JSX.Element => {
         </Box>
         <TabPanel value={value} index={0}>
           <InfoContainer>
-            <InfoBox title='Your Supplied' detail={`${supplied ? Math.round(supplied * 1e+5) / 1e+5 : '-'} eth`} />
+            <InfoBox title='Your Supplied' detail={`${supplied ? Math.round(supplied * 1e+5) / 1e+5 : '0'} eth`} />
             <InfoBox title='Your Supplied' detail='eth' />
             <InfoBox title='Your Supplied' detail='eth' />
           </InfoContainer>
@@ -137,12 +161,16 @@ const MainPage = ({ }): JSX.Element => {
         </TabPanel>
         <TabPanel value={value} index={1}>
           <ActionCard
-            onSubmit={handleSupply}
+            onSubmit={handleRedeem}
             actionType={2}
             accountBalance={supplied}
           />
         </TabPanel>
-      </Box>
+      </Box>) : (
+        <Alert severity="error">{chainId ? 'You are not on Rinkeby Testnet' : 'Please Connect to your wallet'}</Alert>
+      )}
+
+      {loading && <CircularProgress />}
 
 
       <Modal

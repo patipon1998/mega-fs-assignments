@@ -29,27 +29,12 @@ class Web3Service {
   private requireContract() {
     if (!this.contract) throw new Error('Wallet is not connected')
   }
-  // private requireWeb3() {
-  //   if(!this.)
-  // }
-
-  // private initContract() {
-  //   this.web3
-  //   this.contract
-  // }
 
   public async connect() {
     const provider = await this.web3Modal.connect();
     this.provider = provider;
     this.web3 = new Web3(provider);
-    this.contract = new this.web3!.eth.Contract(goerliAbi as any, goerliContractAddr)
-    console.log(await this.getChainId())
-    console.log((await this.web3!.eth.getAccounts())[0], await this.web3!.eth.getBalance((await this.web3!.eth.getAccounts())[0]))
-    console.log('werrrr', await this.contract!.methods.getCash().call())
-    console.log('werrererrr', (await this.contract!.methods.getCash().call()) * ((await this.contract!.methods.exchangeRateCurrent().call()) / 1e18))
-    console.log((await this.contract!.methods.exchangeRateCurrent().call()) / 1e18)
-    console.log('bbb', await this.getAccountBalance())
-    console.log('baaaaaabb', await this.getSuppliedBalance())
+    this.contract = new this.web3!.eth.Contract(rinkebyAbi as any, rinkebyAddr)
   }
 
 
@@ -93,6 +78,15 @@ class Web3Service {
     return this.contract!.methods.mint().send({
       from: await this.getCurrentAccount(),
       value: this.web3!.utils.toWei(`${eth}`, 'ether')
+    });
+  }
+
+  public async redeemUnderlying(eth: number) {
+    this.requireContract()
+    this.requireWeb3()
+
+    return this.contract!.methods.redeemUnderlying(this.web3!.utils.toWei(`${eth}`, 'ether')).send({
+      from: await this.getCurrentAccount(),
     });
   }
 

@@ -54,7 +54,7 @@ const ActionCard = ({
                     {action}
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} variant="body2">
-                    {`Your ${actionType === 1 ? 'account balance' : 'current supplied'}: ${accountBalance ? Math.round(accountBalance * 1000) / 1000 : '-'} ETH`}
+                    {`Your ${actionType === 1 ? 'account balance' : 'current supplied'}: ${accountBalance ? Math.round(accountBalance * 1000) / 1000 : '0'} ETH`}
                 </Typography>
                 <CssTextField
                     id="outlined-basic"
