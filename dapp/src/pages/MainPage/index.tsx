@@ -88,6 +88,7 @@ const MainPage = ({ }): JSX.Element => {
 
   const reCalBalance = async () => {
     if (!(isRinkeby && account)) return
+    console.log('reCal')
     try {
       await Promise.all([
         web3Service.getAccountBalance().then(b => setBalance(b)),
@@ -169,7 +170,7 @@ const MainPage = ({ }): JSX.Element => {
     init()
   }, [])
 
-  useInterval(reCalBalance, 1000)
+  useInterval(reCalBalance, 10000)
 
   return (
     <>
