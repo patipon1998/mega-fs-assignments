@@ -39,6 +39,26 @@ const modalStyle = {
 
 }
 
+function useInterval(callback: Function, delay: number) {
+  const savedCallback = React.useRef(callback);
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
+
 const MainPage = ({ }): JSX.Element => {
 
   const [chainId, setChainId] = useState<number | undefined>();
@@ -147,8 +167,9 @@ const MainPage = ({ }): JSX.Element => {
 
   useEffect(() => {
     init()
-    setInterval(reCalBalance, 10000)
   }, [])
+
+  useInterval(reCalBalance, 1000)
 
   return (
     <>
