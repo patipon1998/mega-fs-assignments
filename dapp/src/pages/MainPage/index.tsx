@@ -169,6 +169,7 @@ const MainPage = ({ }): JSX.Element => {
             <InfoBox title='APY' detail={`${apy ? `${apy} %` : '-'}`} />
           </InfoContainer>
           <ActionCard
+            loading={loading}
             onSubmit={handleSupply}
             actionType={1}
             accountBalance={balance}
@@ -177,6 +178,7 @@ const MainPage = ({ }): JSX.Element => {
         </TabPanel>
         <TabPanel value={value} index={1}>
           <ActionCard
+            loading={loading}
             onSubmit={handleRedeem}
             actionType={2}
             accountBalance={supplied}

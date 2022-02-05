@@ -39,13 +39,15 @@ type propType = {
     accountBalance?: number
     onSubmit: (eth: number) => Promise<void>
     rate?: number
+    loading: boolean
 }
 
 const ActionCard = ({
     actionType,
     accountBalance,
     onSubmit,
-    rate
+    rate,
+    loading
 }: propType): JSX.Element => {
     const [input, setInput] = React.useState<undefined | string>()
     const action = actionType === 1 ? "Supply" : "Withdraw"
@@ -75,7 +77,7 @@ const ActionCard = ({
             <CardActions>
                 <Button
                     onClick={() => onSubmit(Number(input))}
-                    disabled={!input || Number(input) <= 0 || !accountBalance || Number(input) > accountBalance}
+                    disabled={loading || !input || Number(input) <= 0 || !accountBalance || Number(input) > accountBalance}
                     style={{ marginLeft: 'auto', marginRight: 'auto' }}
                     variant="contained"
                 >{action}</Button>
