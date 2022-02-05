@@ -59,7 +59,9 @@ class Web3Service {
   public async getAccountBalance() {
     this.requireWeb3()
 
-    const balance = Number(await this.web3!.eth.getBalance((await this.getAccounts())[0])) / Math.pow(10, 18);
+    const account = (await this.getAccounts())[0]
+    const wei = Number(await this.web3!.eth.getBalance(account))
+    const balance = wei / Math.pow(10, 18);
     return balance
   }
 

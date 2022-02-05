@@ -84,6 +84,7 @@ const MainPage = ({ }): JSX.Element => {
       ])
 
     } catch (e) {
+      console.log(e)
       setError('Cannot connect to the contract, check your network.')
     }
 
