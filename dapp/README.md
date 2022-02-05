@@ -6,10 +6,6 @@ Open terminal, change directory to `<repository_root>/dapp` and run the followin
 
 1. `yarn` to install node packages
 
-    `yarn`
-
 2. `yarn start` to start project
-
-    `yarn start`
 
 The application should be running on port 3000.
