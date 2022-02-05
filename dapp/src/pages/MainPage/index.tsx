@@ -16,7 +16,6 @@ import web3Service from '../../services/Web3Service';
 import TabPanel from '../../components/TabPanel';
 import InfoBox from '../../components/InfoBox';
 import ActionCard from '../../components/ActionCard'
-import { rawListeners } from 'process';
 
 const InfoContainer = styled.div`
   width: 100%;
@@ -27,7 +26,6 @@ const InfoContainer = styled.div`
 
 const modalStyle = {
   textAlign: 'center',
-  textColor: 'black !important',
   color: 'black',
   position: 'absolute' as 'absolute',
   top: '50%',
@@ -38,6 +36,7 @@ const modalStyle = {
   border: '4px solid #000',
   boxShadow: 24,
   p: 4,
+
 }
 
 const MainPage = ({ }): JSX.Element => {
@@ -159,8 +158,8 @@ const MainPage = ({ }): JSX.Element => {
       {isRinkeby ? (<Box sx={{ width: '100%', maxWidth: 1400, marginLeft: 'auto', marginRight: 'auto', marginTop: '40px' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-            <Tab label="Supply" />
-            <Tab label="Withdraw" />
+            <Tab sx={{ color: 'white' }} label="Supply" />
+            <Tab sx={{ color: 'white' }} label="Withdraw" />
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>
@@ -204,10 +203,10 @@ const MainPage = ({ }): JSX.Element => {
       >
         <Fade in={!!error}>
           <Box sx={modalStyle}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
+            <Typography sx={{ color: 'dimgray' }} id="transition-modal-title" variant="h6" component="h2">
               An Error Occurs.
             </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+            <Typography id="transition-modal-description" sx={{ mt: 2, color: 'dimgray' }}>
               {error && error.toString()}
             </Typography>
             <br />
@@ -233,7 +232,7 @@ const MainPage = ({ }): JSX.Element => {
       >
         <Fade in={!!transaction}>
           <Box sx={modalStyle}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
+            <Typography sx={{ color: 'dimgray' }} id="transition-modal-title" variant="h6" component="h2">
               Transaction submitted
             </Typography>
             <br />
